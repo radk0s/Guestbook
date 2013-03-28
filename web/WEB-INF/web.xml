@@ -5,4 +5,13 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
            version="2.5">
 
+    <servlet>
+        <servlet-name>Apple</servlet-name>
+        <servlet-class>guestbook.GuestbookController</servlet-class>
+        <init-param>
+            <param-name>DBDriver</param-name>
+            <param-value>value</param-value>
+        </init-param>
+        <load-on-startup></load-on-startup>
+    </servlet>
 </web-app>
