@@ -1,4 +1,4 @@
-package guestbook;
+ package guestbook.controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
