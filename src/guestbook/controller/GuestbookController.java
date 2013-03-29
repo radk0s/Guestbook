@@ -1,4 +1,4 @@
- package guestbook.controller;
+package guestbook.controller;
 
 import guestbook.model.GuestbookModel;
 
@@ -12,60 +12,43 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 
- public class GuestbookController extends HttpServlet {
+public class GuestbookController extends HttpServlet {
 
-     private GuestbookModel db = GuestbookModel.getInstance();
+    private GuestbookModel db = GuestbookModel.getInstance();
 
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        doPost(req, res);
+    } // doGet
 
-     public void init(ServletConfig conf) throws ServletException {
-         super.init(conf);
-		/*db.MsSQLinit("com.microsoft.sqlserver.jdbc.SQLServerDriver",
-				"jdbc:sqlserver://127.0.0.1\\SQLEXPRESS:1433;databaseName=KsiegaGosci",
-				"sa", "ala123");*/
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        HttpSession session = req.getSession(true);
+        String name = req.getParameter("nam");
+        String mail = req.getParameter("mail");
+        String msg = req.getParameter("msg");
+        String ip = req.getRemoteAddr();
 
-                 db.MsSQLinit("com.mysql.jdbc.Driver","jdbc:mysql://188.116.55.79:3306/guestbook",
-                         "guestbook", "ala123");
+        if (name != null && mail != null && msg != null && !name.equals("")
+                && !mail.equals("") && !msg.equals(""))
+            db.update(name, mail, msg, ip);
 
-     } // init
+        session.setAttribute("resultset", db.getResultSet());
+        session.setAttribute("checkInfo", " ");
 
-     public void destroy() {
-         super.destroy();
-         db.destroy();
-     } // destroy
+        if (db.getCheckmail())
+            session.setAttribute("checkInfo", "Incorrect Email!");
 
-     public void doGet(HttpServletRequest req, HttpServletResponse res)
-             throws ServletException, IOException {
-         doPost(req, res);
-     } // doGet
+        try {
+            if (name.equals("") || mail.equals("") || msg.equals("")) {
+                session.setAttribute("checkInfo", "Missing info!");
+            }
+        } catch (NullPointerException ex) {
+            ex.getMessage();
+        }
 
-     public void doPost(HttpServletRequest req, HttpServletResponse res)
-             throws ServletException, IOException {
-         HttpSession session = req.getSession(true);
-         String name = req.getParameter("nam");
-         String mail = req.getParameter("mail");
-         String msg = req.getParameter("msg");
-         String ip = req.getRemoteAddr();
+        RequestDispatcher rd = req.getRequestDispatcher("index.jsp");
+        rd.forward(req, res);
+    } // doPost
 
-         if (name != null && mail != null && msg != null && !name.equals("")
-                 && !mail.equals("") && !msg.equals(""))
-             db.update(name, mail, msg, ip);
-
-         session.setAttribute("resultset", db.getResultSet());
-         session.setAttribute("checkInfo", " ");
-
-         if (db.getCheckmail())
-             session.setAttribute("checkInfo", "Incorrect Email!");
-
-         try {
-             if (name.equals("") || mail.equals("") || msg.equals("")) {
-                 session.setAttribute("checkInfo", "Missing info!");
-             }
-         } catch (NullPointerException ex) {
-             ex.getMessage();
-         }
-
-         RequestDispatcher rd = req.getRequestDispatcher("index.jsp");
-         rd.forward(req, res);
-     } // doPost
-
- }
+}

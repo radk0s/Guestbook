@@ -1,7 +1,9 @@
 package guestbook.model;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.sql.*;
-import java.io.*;
+import java.util.*;
 
 public class GuestbookModel {
 
@@ -30,7 +32,7 @@ public class GuestbookModel {
                 BufferedWriter br = new BufferedWriter(new FileWriter("logs"));
                 br.write(ex.getMessage());
                 br.close();
-            } catch(Exception e) {
+            } catch (Exception e) {
             }
             ex.printStackTrace();
 
@@ -49,27 +51,32 @@ public class GuestbookModel {
         return checkmail;
     }
 
-    public ResultSet getResultSet() {
+    public List<Map<String,String>> getMessageList()  {
         ResultSet resultset = null;
+        List<Map<String,String>> result= new ArrayList<Map<String,String>>();
         try {
             resultset = statement.executeQuery("select * from Users");
-        } catch (SQLException ex) {
+            while (resultset.next())  {
+                Map<String,String> map = new LinkedHashMap<String, String>();
+                map.put("Date",resultset.getString("Date"));
+                map.put("Name",resultset.getString("Name"));
+                map.put("Ip",resultset.getString("IPAddr"));
+                map.put("Email",resultset.getString("Email"));
+                map.put("Message",resultset.getString("Message"));
+                result.add(map);
+            }
+        } catch(SQLException ex) {
             ex.getMessage();
         }
-        return resultset;
-    } //getResultSet
+        return result;
+    }
 
     public void update(String name, String mail, String msg, String ip) {
-		/*String command = "insert into Users values ('" + ip + "', '" + name
-				+ "', '" + msg + "', default, '" + mail + "')";*/
-        String command = "insert into Users(IPAddr,Name,Message,DATE,Email) values ('" + ip + "', '" + name
-                + "', '" + msg + "', default, '" + mail + "')";
+        String command = "insert into Users(IPAddr,Name,Message,DATE,Email) values ('"
+                + ip + "', '" + name + "', '" + msg + "', default, '" + mail + "')";
 
         try {
             statement.executeUpdate(command);
-        } catch (com.microsoft.sqlserver.jdbc.SQLServerException ex) {
-            checkmail = true;
-            ex.getMessage();
         } catch (SQLException ex) {
             checkmail = true;
             ex.getMessage();
