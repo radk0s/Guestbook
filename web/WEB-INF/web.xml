@@ -10,7 +10,7 @@
     </description>
     <servlet>
         <servlet-name>GuestbookServlet</servlet-name>
-        <servlet-class>guestbook.GuestbookServlet</servlet-class>
+        <servlet-class>guestbook.controller.GuestbookController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GuestbookServlet</servlet-name>
